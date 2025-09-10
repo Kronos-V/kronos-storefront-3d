@@ -33,16 +33,28 @@ Interactive 3D Hero (Atelier-compatible)
   "name": "Interactive 3D Hero",
   "tag": "section",
   "settings": [
-    { "type": "select", "id": "mode", "label": "Render mode",
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Render mode",
       "options": [
         { "value": "spline", "label": "Spline embed" },
         { "value": "modelviewer", "label": "Model Viewer (GLB/USDZ)" },
         { "value": "three", "label": "Three.js (assets/hero-3d.js)" }
       ],
-      "default": "spline"
+      "default": "three"
     },
-    { "type": "textarea", "id": "spline_embed", "label": "Spline embed code", "default": "" },
-    { "type": "url", "id": "model_url", "label": "Model URL (GLB/USDZ from Files)" },
+    {
+      "type": "textarea",
+      "id": "spline_embed",
+      "label": "Spline embed code",
+      "default": "<!-- paste Spline iframe here if you choose 'Spline' mode -->"
+    },
+    {
+      "type": "url",
+      "id": "model_url",
+      "label": "Model URL (GLB/USDZ from Files)"
+    },
     { "type": "text", "id": "alt", "label": "Alt text", "default": "3D hero" },
     { "type": "color", "id": "bg", "label": "Background", "default": "#000000" },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#F0F0EC" },

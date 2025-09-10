@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "hero_iyt6zg": {
       "type": "hero",
@@ -44,6 +45,7 @@
       "settings": {
         "media_type_1": "image",
         "media_type_2": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -105,6 +107,7 @@
       },
       "name": "Collection links",
       "settings": {
+        "collection_list": [],
         "layout": "spotlight",
         "section_width": "page-width",
         "alignment": "left",
@@ -122,6 +125,7 @@
           "static": true,
           "settings": {
             "media_type": "image",
+            "link": "",
             "video_loop": true,
             "video_autoplay": false,
             "image_position": "cover",
@@ -201,6 +205,7 @@
       },
       "name": "t:names.featured_product",
       "settings": {
+        "product": "",
         "layout": "media-left",
         "color_scheme": "scheme-3",
         "padding-block-start": 0,
@@ -311,6 +316,7 @@
             "group_JHtHYm": {
               "type": "_product-card-group",
               "settings": {
+                "link": "",
                 "open_in_new_tab": false,
                 "content_direction": "row",
                 "vertical_on_mobile": true,
@@ -349,6 +355,7 @@
                   "type": "_product-card-group",
                   "name": "t:names.group",
                   "settings": {
+                    "link": "",
                     "open_in_new_tab": false,
                     "content_direction": "column",
                     "vertical_on_mobile": true,
@@ -440,6 +447,7 @@
                   "type": "_product-card-group",
                   "name": "t:names.group",
                   "settings": {
+                    "link": "",
                     "open_in_new_tab": false,
                     "content_direction": "column",
                     "vertical_on_mobile": true,
@@ -588,6 +596,7 @@
       "settings": {
         "media_type_1": "image",
         "media_type_2": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "row",
         "vertical_on_mobile": true,
@@ -610,6 +619,20 @@
         "padding-block-start": 0,
         "padding-block-end": 40
       }
+    },
+    "interactive_3d_hero_RXAwRf": {
+      "type": "interactive-3d-hero",
+      "name": "Interactive 3D Hero",
+      "settings": {
+        "mode": "three",
+        "spline_embed": "<!-- paste Spline iframe here if you choose 'Spline' mode -->",
+        "model_url": "",
+        "alt": "3D hero",
+        "bg": "#ffffff",
+        "text_color": "#000000",
+        "heading": "The Kronos Legacy",
+        "subheading": "Redefining Luxury"
+      }
     }
   },
   "order": [
@@ -617,6 +640,7 @@
     "collection_links_Ut4aMz",
     "featured_product_mTUbKC",
     "product_list_UwRqN4",
-    "hero_MVUtj6"
+    "hero_MVUtj6",
+    "interactive_3d_hero_RXAwRf"
   ]
 }

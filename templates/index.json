@@ -1092,9 +1092,13 @@
         "mode": "three",
         "spline_embed": "<!-- paste Spline iframe here if you choose 'Spline' mode -->",
         "model_url": "",
-        "alt": "3D hero",
-        "bg": "#212a2d",
-        "text_color": "#f0f0ec",
+        "three_model_url": "",
+        "three_env_hdr": "",
+        "exposure": 0.6,
+        "autorotate": true,
+        "rotation_speed": 0.4,
+        "bg": "#f0f0ec",
+        "text_color": "#212a2d",
         "heading": "The Kronos Legacy",
         "subheading": "Redefine Luxury"
       }

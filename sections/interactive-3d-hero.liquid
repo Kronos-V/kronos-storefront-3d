@@ -60,9 +60,12 @@ var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
           // local then CDN
           load(pair[0], next, function(){ load(pair[1], next, function(){ onFail && onFail(pair); }); });
         }
-        console.error('GLB load failed', err);
-status('Model failed to load'); 
-addCube();
+        (function series(i){
+          if (i >= libs.length) return init();
+          loadPair(libs[i], function(){ series(i+1); }, function(pair){
+            status('Failed to load: ' + pair[0]); console.error('Load failed for both local and CDN:', pair);
+          });
+        })(0);
 
         function init(){
           status('Initializing…');

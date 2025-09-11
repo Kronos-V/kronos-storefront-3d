@@ -58,9 +58,9 @@
         }
       },
       "settings": {
-        "logo_position": "right",
-        "menu_position": "left",
-        "menu_row": "top",
+        "logo_position": "center",
+        "menu_position": "center",
+        "menu_row": "bottom",
         "show_search": true,
         "search_position": "right",
         "search_row": "top",

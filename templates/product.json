@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "product-information",
@@ -197,8 +198,8 @@
                   "type": "_accordion-row",
                   "settings": {
                     "heading": "Description",
-                    "open_by_default": false,
-                    "icon": "none",
+                    "open_by_default": true,
+                    "icon": "snowflake",
                     "width": 20
                   },
                   "blocks": {
@@ -237,7 +238,7 @@
                   "settings": {
                     "heading": "Care",
                     "open_by_default": false,
-                    "icon": "none",
+                    "icon": "snowflake",
                     "width": 20
                   },
                   "blocks": {
@@ -276,7 +277,7 @@
                   "settings": {
                     "heading": "Design",
                     "open_by_default": false,
-                    "icon": "none",
+                    "icon": "snowflake",
                     "width": 20
                   },
                   "blocks": {
@@ -405,6 +406,7 @@
             "group_396y6r": {
               "type": "_product-card-group",
               "settings": {
+                "link": "",
                 "open_in_new_tab": false,
                 "content_direction": "row",
                 "vertical_on_mobile": true,
@@ -443,6 +445,7 @@
                   "type": "_product-card-group",
                   "name": "t:names.group",
                   "settings": {
+                    "link": "",
                     "open_in_new_tab": false,
                     "content_direction": "column",
                     "vertical_on_mobile": true,
@@ -534,6 +537,7 @@
                   "type": "_product-card-group",
                   "name": "t:names.group",
                   "settings": {
+                    "link": "",
                     "open_in_new_tab": false,
                     "content_direction": "column",
                     "vertical_on_mobile": true,

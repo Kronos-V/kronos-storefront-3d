@@ -76,7 +76,7 @@
           "type": "_collection-link",
           "static": true,
           "settings": {
-            "show_count": true
+            "show_count": false
           },
           "blocks": {
             "title": {
@@ -84,7 +84,7 @@
               "static": true,
               "settings": {
                 "font": "var(--font-heading--family)",
-                "weight": "",
+                "weight": "500",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none"
@@ -97,7 +97,7 @@
               "settings": {
                 "height": "medium",
                 "ratio": "portrait",
-                "border_radius": 0
+                "border_radius": 8
               },
               "blocks": {}
             }
@@ -107,7 +107,9 @@
       },
       "name": "Collection links",
       "settings": {
-        "collection_list": [],
+        "collection_list": [
+          "simplicity-collection"
+        ],
         "layout": "spotlight",
         "section_width": "page-width",
         "alignment": "left",
@@ -115,101 +117,6 @@
         "color_scheme": "",
         "padding-block-start": 82,
         "padding-block-end": 82
-      }
-    },
-    "featured_product_mTUbKC": {
-      "type": "featured-product",
-      "blocks": {
-        "media": {
-          "type": "_media-without-appearance",
-          "static": true,
-          "settings": {
-            "media_type": "image",
-            "link": "",
-            "video_loop": true,
-            "video_autoplay": false,
-            "image_position": "cover",
-            "video_position": "cover"
-          },
-          "blocks": {}
-        },
-        "featured-product": {
-          "type": "_featured-product",
-          "name": "t:names.product",
-          "static": true,
-          "settings": {},
-          "blocks": {
-            "featured-product-title": {
-              "type": "product-title",
-              "name": "t:names.title",
-              "static": true,
-              "settings": {
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h5",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "featured-product-price": {
-              "type": "_featured-product-price",
-              "static": true,
-              "settings": {
-                "show_sale_price_first": true,
-                "type_preset": "h5"
-              },
-              "blocks": {}
-            },
-            "featured-product-gallery": {
-              "type": "_featured-product-gallery",
-              "name": "t:names.image",
-              "static": true,
-              "settings": {
-                "image_ratio": "adapt",
-                "constrain_to_viewport": "true"
-              },
-              "blocks": {}
-            },
-            "featured-product-swatches": {
-              "type": "swatches",
-              "name": "t:content.swatches",
-              "static": true,
-              "settings": {
-                "product_swatches_alignment": "flex-start",
-                "product_swatches_alignment_mobile": "flex-start",
-                "hide_padding": false,
-                "product_swatches_padding_top": 4,
-                "product_swatches_padding_bottom": 4,
-                "product_swatches_padding_left": 0,
-                "product_swatches_padding_right": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": []
-        }
-      },
-      "name": "t:names.featured_product",
-      "settings": {
-        "product": "",
-        "layout": "media-left",
-        "color_scheme": "scheme-3",
-        "padding-block-start": 0,
-        "padding-block-end": 0
       }
     },
     "product_list_UwRqN4": {
@@ -224,14 +131,14 @@
             "horizontal_alignment": "flex-start",
             "vertical_alignment": "center",
             "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment_flex_direction_column": "center",
             "vertical_alignment_flex_direction_column": "center",
             "gap": 12,
             "width": "fill",
             "custom_width": 100,
             "width_mobile": "fill",
             "custom_width_mobile": 100,
-            "height": "fit",
+            "height": "fill",
             "custom_height": 100,
             "inherit_color_scheme": true,
             "color_scheme": "",
@@ -355,7 +262,7 @@
                   "type": "_product-card-group",
                   "name": "t:names.group",
                   "settings": {
-                    "link": "",
+                    "link": "shopify://products/supima-cotton-basic-tee",
                     "open_in_new_tab": false,
                     "content_direction": "column",
                     "vertical_on_mobile": true,
@@ -414,96 +321,15 @@
                         "padding-inline-end": 0
                       },
                       "blocks": {}
-                    },
-                    "price_4XkbjB": {
-                      "type": "price",
-                      "settings": {
-                        "show_sale_price_first": true,
-                        "show_installments": false,
-                        "show_tax_info": false,
-                        "type_preset": "h5",
-                        "width": "100%",
-                        "alignment": "left",
-                        "font": "var(--font-body--family)",
-                        "font_size": "1rem",
-                        "line_height": "normal",
-                        "letter_spacing": "normal",
-                        "case": "none",
-                        "color": "var(--color-foreground)",
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
-                      },
-                      "blocks": {}
                     }
                   },
                   "block_order": [
-                    "product_title_iRxawi",
-                    "price_4XkbjB"
-                  ]
-                },
-                "group_cPyTRf": {
-                  "type": "_product-card-group",
-                  "name": "t:names.group",
-                  "settings": {
-                    "link": "",
-                    "open_in_new_tab": false,
-                    "content_direction": "column",
-                    "vertical_on_mobile": true,
-                    "horizontal_alignment": "flex-start",
-                    "vertical_alignment": "center",
-                    "align_baseline": false,
-                    "horizontal_alignment_flex_direction_column": "flex-start",
-                    "vertical_alignment_flex_direction_column": "flex-start",
-                    "gap": 0,
-                    "width": "fill",
-                    "custom_width": 40,
-                    "width_mobile": "fill",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "custom_height": 100,
-                    "inherit_color_scheme": true,
-                    "color_scheme": "",
-                    "background_media": "none",
-                    "video_position": "cover",
-                    "background_image_position": "cover",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_radius": 0,
-                    "toggle_overlay": false,
-                    "overlay_color": "#00000026",
-                    "overlay_style": "solid",
-                    "gradient_direction": "to top",
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {
-                    "swatches_tGqDq9": {
-                      "type": "swatches",
-                      "settings": {
-                        "product_swatches_alignment": "flex-end",
-                        "product_swatches_alignment_mobile": "flex-start",
-                        "hide_padding": false,
-                        "product_swatches_padding_top": 0,
-                        "product_swatches_padding_bottom": 0,
-                        "product_swatches_padding_left": 0,
-                        "product_swatches_padding_right": 0
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": [
-                    "swatches_tGqDq9"
+                    "product_title_iRxawi"
                   ]
                 }
               },
               "block_order": [
-                "group_KJDaTQ",
-                "group_cPyTRf"
+                "group_KJDaTQ"
               ]
             }
           },
@@ -516,9 +342,9 @@
       "name": "Featured collection",
       "settings": {
         "collection": "all",
-        "layout_type": "grid",
+        "layout_type": "editorial",
         "carousel_on_mobile": false,
-        "max_products": 4,
+        "max_products": 1,
         "columns": 4,
         "mobile_columns": "2",
         "mobile_card_size": "60cqw",
@@ -527,11 +353,11 @@
         "icons_style": "arrow",
         "icons_shape": "none",
         "section_width": "page-width",
-        "horizontal_alignment": "flex-start",
+        "horizontal_alignment": "center",
         "gap": 28,
         "color_scheme": "scheme-1",
-        "padding-block-start": 84,
-        "padding-block-end": 100
+        "padding-block-start": 75,
+        "padding-block-end": 75
       }
     },
     "hero_MVUtj6": {
@@ -638,7 +464,6 @@
   "order": [
     "hero_iyt6zg",
     "collection_links_Ut4aMz",
-    "featured_product_mTUbKC",
     "product_list_UwRqN4",
     "hero_MVUtj6",
     "interactive_3d_hero_RXAwRf"

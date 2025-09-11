@@ -454,8 +454,8 @@
         "spline_embed": "<!-- paste Spline iframe here if you choose 'Spline' mode -->",
         "model_url": "",
         "alt": "3D hero",
-        "bg": "#ffffff",
-        "text_color": "#000000",
+        "bg": "#f0f0ec",
+        "text_color": "#212a2d",
         "heading": "The Kronos Legacy",
         "subheading": "Redefining Luxury"
       }

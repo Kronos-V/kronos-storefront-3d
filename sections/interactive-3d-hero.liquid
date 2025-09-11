@@ -20,7 +20,7 @@
     {% when 'three' %}
       <canvas
         id="hero3d-{{ section.id }}"
-        data-model="{{ section.settings.three_model_url }}"
+        data-model="{{ section.settings.three_model_url | default: section.settings.model_url }}"
         data-env="{{ section.settings.three_env_hdr }}"
         data-exposure="{{ section.settings.exposure | default: 1.0 }}"
         data-autorotate="{{ section.settings.autorotate }}"
@@ -39,11 +39,11 @@
         function status(txt){ if(statusEl){ statusEl.textContent = txt || ''; statusEl.style.display = txt ? 'inline-block':'none'; } }
 
         var canvasId = 'hero3d-{{ section.id }}';
-        var modelURL = {{ section.settings.three_model_url | json }};
-        var envURL   = {{ section.settings.three_env_hdr | json }};
-        var exposure = {{ section.settings.exposure | default: 1.0 }};
-        var autorot  = {{ section.settings.autorotate | default: true | json }};
-        var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
+var modelURL = {{ section.settings.three_model_url | default: section.settings.model_url | json }};
+var envURL   = {{ section.settings.three_env_hdr | json }};
+var exposure = {{ section.settings.exposure | default: 1.0 }};
+var autorot  = {{ section.settings.autorotate | default: true | json }};
+var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
 
         // Try local assets first; on error, fall back to CDN
         var libs = [

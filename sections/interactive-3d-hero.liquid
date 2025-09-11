@@ -1,4 +1,4 @@
-{% comment %}Interactive 3D Hero — simple, robust{% endcomment %}
+{% comment %}Interactive 3D Hero — local-first with CDN fallback{% endcomment %}
 <section class="section-3d-hero" style="position:relative;min-height:70vh">
   {% case section.settings.mode %}
 
@@ -28,12 +28,16 @@
         style="width:100%;height:70vh;display:block;background:{{ section.settings.bg | default: '#000' }}">
       </canvas>
 
-      {%- comment -%}
-      Non-module loader (always works). Loads Three + DRACO + GLTF + RGBE from CDN,
-      draws your GLB if provided, else shows a rotating cube.
-      {%- endcomment -%}
+      <!-- Status badge (shows errors if any) -->
+      <div id="tlk-3d-status-{{ section.id }}" style="position:absolute;left:10px;bottom:10px;font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;pointer-events:none;">
+        Loading 3D…
+      </div>
+
       <script>
       (function(){
+        var statusEl = document.getElementById('tlk-3d-status-{{ section.id }}');
+        function status(txt){ if(statusEl){ statusEl.textContent = txt || ''; statusEl.style.display = txt ? 'inline-block':'none'; } }
+
         var canvasId = 'hero3d-{{ section.id }}';
         var modelURL = {{ section.settings.three_model_url | json }};
         var envURL   = {{ section.settings.three_env_hdr | json }};
@@ -41,16 +45,33 @@
         var autorot  = {{ section.settings.autorotate | default: true | json }};
         var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
 
-        function load(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb; s.onerror=function(e){console.error('Load failed:',src,e)}; document.head.appendChild(s); }
-        function series(arr, done){ (function next(){ if(!arr.length) return done(); load(arr.shift(), next); })(); }
+        // Try local assets first; on error, fall back to CDN
+        var libs = [
+          [ {{ 'three.min.js'   | asset_url | json }}, 'https://unpkg.com/three@0.160.0/build/three.min.js' ],
+          [ {{ 'DRACOLoader.js' | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/DRACOLoader.js' ],
+          [ {{ 'GLTFLoader.js'  | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js' ],
+          [ {{ 'RGBELoader.js'  | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/RGBELoader.js' ]
+        ];
 
-        series([
-          'https://unpkg.com/three@0.160.0/build/three.min.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/DRACOLoader.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/RGBELoader.js'
-        ], function init(){
-          var canvas = document.getElementById(canvasId); if(!canvas||!window.THREE) return;
+        function load(src, ok, fail){
+          var s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=function(){ fail && fail(src); }; document.head.appendChild(s);
+        }
+        function loadPair(pair, next, onFail){
+          // local then CDN
+          load(pair[0], next, function(){ load(pair[1], next, function(){ onFail && onFail(pair); }); });
+        }
+        (function series(i){
+          if (i >= libs.length) return init();
+          loadPair(libs[i], function(){ series(i+1); }, function(pair){
+            status('Failed to load: ' + pair[0]); console.error('Load failed for both local and CDN:', pair);
+          });
+        })(0);
+
+        function init(){
+          status('Initializing…');
+          if (!window.THREE){ status('THREE not available'); return; }
+
+          var canvas = document.getElementById(canvasId); if(!canvas){ status('Canvas missing'); return; }
 
           var r = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
           r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
@@ -63,21 +84,23 @@
           var cam = new THREE.PerspectiveCamera(60, 16/9, 0.1, 100);
           cam.position.set(0,0,3);
 
-          // Base lights
+          // base lights
           sc.add(new THREE.AmbientLight(0xffffff, .6));
           var dl = new THREE.DirectionalLight(0xffffff, .9); dl.position.set(2,3,4); dl.castShadow = true; sc.add(dl);
 
-          // Soft ground shadow receiver
+          // soft ground shadow
           var ground = new THREE.Mesh(new THREE.PlaneGeometry(10,10), new THREE.ShadowMaterial({opacity:.25}));
           ground.rotation.x = -Math.PI/2; ground.position.y = -0.75; ground.receiveShadow = true; sc.add(ground);
 
-          // Optional HDR environment
-          if (envURL){
-            var pmrem = new THREE.PMREMGenerator(r);
-            new THREE.RGBELoader().load(envURL, function(hdr){
-              sc.environment = pmrem.fromEquirectangular(hdr).texture;
-              hdr.dispose(); pmrem.dispose();
-            }, undefined, function(err){ console.warn('HDR load failed', err); });
+          // optional HDR
+          if (envURL && THREE.RGBELoader && THREE.PMREMGenerator){
+            try {
+              var pmrem = new THREE.PMREMGenerator(r);
+              new THREE.RGBELoader().load(envURL, function(hdr){
+                sc.environment = pmrem.fromEquirectangular(hdr).texture;
+                hdr.dispose(); pmrem.dispose();
+              });
+            } catch(e){ console.warn('HDR failed', e); }
           }
 
           var root = null;
@@ -86,37 +109,43 @@
             var geo = new THREE.BoxGeometry(1,1,1);
             var mat = new THREE.MeshStandardMaterial({ metalness:.4, roughness:.2 });
             root = new THREE.Mesh(geo, mat);
-            root.castShadow = true;
-            sc.add(root);
+            root.castShadow = true; sc.add(root);
           }
 
-          if (modelURL){
-            var draco = new THREE.DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-            var loader = new THREE.GLTFLoader(); loader.setDRACOLoader(draco);
-            loader.load(modelURL, function(gltf){
-              root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
-              if (!root) { addCube(); return; }
-              root.traverse(function(o){
-                if (o.isMesh){
-                  o.castShadow = true;
-                  if (o.material && o.material.map){ o.material.map.colorSpace = THREE.SRGBColorSpace; }
-                }
+          if (modelURL && THREE.GLTFLoader){
+            try {
+              var draco = new THREE.DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+              var loader = new THREE.GLTFLoader(); loader.setDRACOLoader(draco);
+              loader.load(modelURL, function(gltf){
+                root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
+                if (!root){ addCube(); ready(); return; }
+                root.traverse(function(o){
+                  if (o.isMesh){
+                    o.castShadow = true;
+                    if (o.material && o.material.map){ o.material.map.colorSpace = THREE.SRGBColorSpace; }
+                  }
+                });
+                // center & frame
+                var box = new THREE.Box3().setFromObject(root);
+                var size = box.getSize(new THREE.Vector3());
+                var center = box.getCenter(new THREE.Vector3());
+                root.position.sub(center);
+                var maxDim = Math.max(size.x,size.y,size.z);
+                var dist = Math.max(2, maxDim*1.4);
+                cam.position.set(0,0,dist);
+                sc.add(root);
+                ready();
+              }, undefined, function(err){
+                console.error('GLB load failed', err); addCube(); ready();
               });
-              // center & frame
-              var box = new THREE.Box3().setFromObject(root);
-              var size = box.getSize(new THREE.Vector3());
-              var center = box.getCenter(new THREE.Vector3());
-              root.position.sub(center);
-              var maxDim = Math.max(size.x,size.y,size.z);
-              var dist = Math.max(2, maxDim*1.4);
-              cam.position.set(0,0,dist);
-              sc.add(root);
-            }, undefined, function(err){
-              console.error('GLB load failed', err); addCube();
-            });
+            } catch(e){
+              console.error('GLB init failed', e); addCube(); ready();
+            }
           } else {
-            addCube();
+            addCube(); ready();
           }
+
+          function ready(){ status(''); }
 
           function resize(){
             var w = canvas.clientWidth || 1200, h = canvas.clientHeight || 600;
@@ -131,13 +160,13 @@
             }
             r.render(sc, cam);
           })();
-        });
+        }
       })();
       </script>
 
     {% else %}
       <div style="height:70vh;display:grid;place-items:center;background:#000;color:#fff;">
-        Set Render mode to “Three.js (assets/hero-3d-.js)”.
+        Set Render mode to “Three.js (assets/hero-3d.js)”.
       </div>
   {% endcase %}
 
@@ -173,7 +202,7 @@
     { "type": "range", "id": "rotation_speed", "label": "Rotate speed", "min": 0.1, "max": 2.0, "step": 0.1, "default": 0.4 },
 
     { "type": "color", "id": "bg", "label": "Background", "default": "#000000" },
-    { "type": "color", "id": "text_color", "label": "Text color", "default": "#F0F0EC" },
+    { "type": "color", "id": "text_color", "id": "text_color", "label": "Text color", "default": "#F0F0EC" },
     { "type": "text", "id": "alt", "label": "Alt text", "default": "3D hero" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "The Kronos Legacy" },
     { "type": "text", "id": "subheading", "label": "Subheading", "default": "Time Doesn’t Touch This." }

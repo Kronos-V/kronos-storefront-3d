@@ -1,26 +1,65 @@
 {% comment %}
-Materials Portal — TLK
-Homepage grid of material tiles with a subtle 3D/glow hover.
-Safe for Atelier / OS2.0. No theme CSS edits required.
+Materials Portal — TLK (v2)
+- Fix: reliable grid targeting (no broken prevElementSibling)
+- New: Card image ratio 'Auto' (no crop), Image fit (cover/contain), Image focus
+- Cleaner responsive columns via CSS vars instead of JS
 {% endcomment %}
-<section class="tlk-materials-portal" style="position:relative;padding:clamp(28px,4vw,56px) 0;background:{{ section.settings.bg }};color:{{ section.settings.text_color }}">
-  <div class="tlk-container" style="width:min(1200px,92%);margin:0 auto;">
-    {% if section.settings.heading != blank %}
-      <h2 style="font-family:'Bodoni Moda',serif;font-size:clamp(28px,4.5vw,48px);line-height:1.1;margin:0 0 8px 0;">
-        {{ section.settings.heading }}
-      </h2>
-    {% endif %}
-    {% if section.settings.subheading != blank %}
-      <p style="max-width:65ch;opacity:.9;margin:0 0 28px 0;">{{ section.settings.subheading }}</p>
-    {% endif %}
 
-    {% assign cols_d = section.settings.columns_desktop | default: 3 %}
-    {% assign cols_m = section.settings.columns_mobile | default: 1 %}
-    <div class="tlk-grid"
-         style="
-           display:grid;gap:clamp(12px,2vw,20px);
-           grid-template-columns:repeat({{ cols_m }}, minmax(0,1fr));
-         ">
+{% assign cols_d = section.settings.columns_desktop | default: 3 %}
+{% assign cols_m = section.settings.columns_mobile | default: 1 %}
+
+{% capture ar_style %}
+{% case section.settings.card_ratio %}
+  {% when 'square' %}aspect-ratio:1/1;
+  {% when 'land' %}aspect-ratio:16/9;
+  {% when 'port' %}aspect-ratio:3/4;
+  {% else %}{% comment %}auto{% endcomment %}{% endcase %}
+{% endcapture %}
+
+<section id="materials-{{ section.id }}" class="tlk-materials-portal"
+         style="--cols-m: {{ cols_m }}; --cols-d: {{ cols_d }}; --glow: {{ section.settings.glow | default: 'rgba(16,59,88,.35)' }}; padding:clamp(28px,4vw,56px) 0; background:{{ section.settings.bg }}; color:{{ section.settings.text_color }}">
+
+  <style>
+    #materials-{{ section.id }} .tlk-container{width:min(1200px,92%);margin:0 auto;}
+    #materials-{{ section.id }} .tlk-title{font-family:'Bodoni Moda',serif;font-size:clamp(28px,4.5vw,48px);line-height:1.1;margin:0 0 8px 0;}
+    #materials-{{ section.id }} .tlk-sub{max-width:65ch;opacity:.9;margin:0 0 28px 0;}
+    #materials-{{ section.id }} .tlk-grid{
+      display:grid; gap:clamp(12px,2vw,20px);
+      grid-template-columns:repeat(var(--cols-m), minmax(0,1fr));
+    }
+    @media (min-width: 900px){
+      #materials-{{ section.id }} .tlk-grid{ grid-template-columns:repeat(var(--cols-d), minmax(0,1fr)); }
+    }
+    #materials-{{ section.id }} .tlk-card{ text-decoration:none; color:inherit; display:block; overflow:hidden; border-radius:18px; position:relative; isolation:isolate; }
+    #materials-{{ section.id }} .tlk-media{ position:relative; border-radius:18px; overflow:hidden; background:#0c0c0c; {{ ar_style | strip }} }
+    #materials-{{ section.id }} .tlk-media img{
+      width:100%;
+      {% if section.settings.card_ratio == 'auto' %}height:auto;{% else %}height:100%;{% endif %}
+      object-fit:{{ section.settings.image_fit | default: 'cover' }};
+      object-position:{{ section.settings.image_focus | default: 'center center' }};
+      display:block; transform:translateZ(0);
+    }
+    #materials-{{ section.id }} .tlk-glow{ position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:0 0 0 transparent; transition:box-shadow .35s ease; }
+    #materials-{{ section.id }} .tlk-overlay{
+      position:absolute; inset:0; display:flex; align-items:end; justify-content:space-between;
+      padding:clamp(12px,2.2vw,20px);
+      background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+      color:#fff;
+    }
+    #materials-{{ section.id }} .tlk-card:hover{ transform:translateY(-2px); transition:transform .35s ease; }
+    #materials-{{ section.id }} .tlk-card:hover .tlk-glow{ box-shadow:0 20px 60px var(--glow); }
+
+    /* Optional: subtle border on dark backgrounds for definition */
+    #materials-{{ section.id }} .tlk-media::after{
+      content:""; position:absolute; inset:0; border:1px solid rgba(255,255,255,.06); border-radius:inherit; pointer-events:none;
+    }
+  </style>
+
+  <div class="tlk-container">
+    {% if section.settings.heading != blank %}<h2 class="tlk-title">{{ section.settings.heading }}</h2>{% endif %}
+    {% if section.settings.subheading != blank %}<p class="tlk-sub">{{ section.settings.subheading }}</p>{% endif %}
+
+    <div class="tlk-grid">
       {% for block in section.blocks %}
         {% if block.type == 'card' %}
           {% assign title = block.settings.title %}
@@ -29,52 +68,30 @@ Safe for Atelier / OS2.0. No theme CSS edits required.
           {% assign tag = block.settings.tag %}
           {% assign desc = block.settings.desc %}
 
-          <a {% if url != blank %}href="{{ url }}"{% endif %}
-             class="tlk-card"
-             style="text-decoration:none;color:inherit;display:block;overflow:hidden;border-radius:18px; position:relative; isolation:isolate; transform-style:preserve-3d; perspective:1000px;">
-            <div class="tlk-media"
-                 style="
-                   position:relative;aspect-ratio:
-                     {% case section.settings.card_ratio %}
-                       {% when 'land' %} 16 / 9
-                       {% when 'port' %} 3 / 4
-                       {% else %} 1 / 1
-                     {% endcase %};
-                   border-radius:18px; overflow:hidden;
-                   background:#0c0c0c;">
+          <a {% if url != blank %}href="{{ url }}"{% endif %} class="tlk-card">
+            <div class="tlk-media">
               {% if image != blank %}
-                <img src="{{ image | image_url: width: 1800 }}"
-                     srcset="{{ image | image_srcset }}"
-                     sizes="(min-width: 1000px) calc((100vw - 8rem)/{{ cols_d }}), 92vw"
-                     alt="{{ title | escape }}"
-                     loading="lazy"
-                     style="width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(0);">
+                <img
+                  src="{{ image | image_url: width: 1800 }}"
+                  srcset="{{ image | image_srcset }}"
+                  sizes="(min-width: 900px) calc((min(1200px, 92vw) - (var(--cols-d) - 1) * 20px) / var(--cols-d)), calc((92vw - (var(--cols-m) - 1) * 16px) / var(--cols-m))"
+                  alt="{{ title | escape }}"
+                  loading="lazy">
               {% else %}
-                <div style="position:absolute;inset:0;display:grid;place-items:center;opacity:.6;">
-                  <span>No image</span>
-                </div>
+                <div style="position:absolute;inset:0;display:grid;place-items:center;opacity:.6;"><span>No image</span></div>
               {% endif %}
 
-              <!-- glow -->
-              <div class="tlk-glow"
-                   style="position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-                          box-shadow:0 0 0 transparent; transition:box-shadow .35s ease;"></div>
+              <div class="tlk-glow"></div>
 
-              <!-- overlay text -->
-              <div class="tlk-overlay"
-                   style="position:absolute;inset:0;display:flex;align-items:end;justify-content:space-between;
-                          padding:clamp(12px,2.2vw,20px);background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
-                          color:#fff;">
+              <div class="tlk-overlay">
                 <div>
                   {% if tag != blank %}
                     <span style="display:inline-block;font-size:12px;letter-spacing:.06em;opacity:.8;margin-bottom:6px;background:rgba(255,255,255,.08);padding:.25rem .5rem;border-radius:999px;">{{ tag }}</span>
                   {% endif %}
                   <div style="font-family:'Bodoni Moda',serif;font-size:clamp(18px,2.2vw,28px);line-height:1.1;">{{ title }}</div>
-                  {% if desc != blank %}
-                    <div style="font-size:14px;opacity:.85;margin-top:6px;max-width:45ch;">{{ desc }}</div>
-                  {% endif %}
+                  {% if desc != blank %}<div style="font-size:14px;opacity:.85;margin-top:6px;max-width:45ch;">{{ desc }}</div>{% endif %}
                 </div>
-                <div aria-hidden="true" style="font-size:20px;opacity:.9;transform:translateZ(25px)">↗</div>
+                <div aria-hidden="true" style="font-size:20px;opacity:.9">↗</div>
               </div>
             </div>
           </a>
@@ -84,28 +101,7 @@ Safe for Atelier / OS2.0. No theme CSS edits required.
   </div>
 
   <script>
-    (function(){
-      // responsive columns on desktop
-      const grid = document.currentScript.previousElementSibling.previousElementSibling;
-      const colsD = {{ cols_d | json }};
-      const mq = window.matchMedia('(min-width: 900px)');
-      function applyCols(){ grid.style.gridTemplateColumns = mq.matches ? `repeat(${colsD},minmax(0,1fr))` : grid.style.gridTemplateColumns; }
-      applyCols(); mq.addEventListener?.('change', applyCols);
-
-      // hover glow & subtle lift
-      grid.querySelectorAll('.tlk-card').forEach(card=>{
-        const glow = card.querySelector('.tlk-glow');
-        card.addEventListener('pointerenter', ()=> {
-          card.style.transition='transform .35s ease';
-          card.style.transform='translateY(-2px)';
-          glow.style.boxShadow = '0 20px 60px {{ section.settings.glow | default: "rgba(16,59,88,.35)" }}';
-        });
-        card.addEventListener('pointerleave', ()=> {
-          card.style.transform='translateY(0)';
-          glow.style.boxShadow = '0 0 0 transparent';
-        });
-      });
-    })();
+    // (Optional JS removed for reliability; CSS handles responsiveness)
   </script>
 </section>
 
@@ -117,13 +113,21 @@ Safe for Atelier / OS2.0. No theme CSS edits required.
     { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Explore the fibers and finishes behind each piece." },
     { "type": "range", "id": "columns_desktop", "min": 2, "max": 4, "step": 1, "label": "Columns (desktop)", "default": 3 },
     { "type": "select", "id": "columns_mobile", "label": "Columns (mobile)", "default": "1", "options": [{"value":"1","label":"1"},{"value":"2","label":"2"}] },
-    { "type": "select", "id": "card_ratio", "label": "Card image ratio", "default": "square",
+    { "type": "select", "id": "card_ratio", "label": "Card image ratio", "default": "auto",
       "options": [
+        {"value":"auto","label":"Auto (no crop)"},
         {"value":"square","label":"Square"},
         {"value":"land","label":"Landscape 16:9"},
         {"value":"port","label":"Portrait 3:4"}
       ]
     },
+    { "type": "select", "id": "image_fit", "label": "Image fit", "default": "cover",
+      "options": [
+        {"value":"cover","label":"Cover (fill, may crop)"},
+        {"value":"contain","label":"Contain (no crop, may letterbox)"}
+      ]
+    },
+    { "type": "text", "id": "image_focus", "label": "Image focus (CSS object-position)", "default": "center center" },
     { "type": "color", "id": "bg", "label": "Background", "default": "#000000" },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#F0F0EC" },
     { "type": "text", "id": "glow", "label": "Glow (CSS color/rgba)", "default": "rgba(16,59,88,.35)" }

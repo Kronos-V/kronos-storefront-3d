@@ -1,0 +1,98 @@
+{% comment %}
+Product Materials & Care — TLK
+Displays product metafields: details.materials, details.care, details.size_chart
+Add this section to your product template in the Theme Editor.
+{% endcomment %}
+<section class="tlk-pdp-info" style="padding:clamp(20px,3vw,32px) 0;border-top:1px solid rgba(255,255,255,.08)">
+  <div style="width:min(1000px,92%);margin:0 auto;display:grid;gap:24px;">
+    <div style="display:grid;gap:8px;">
+      <h3 style="font-family:'Bodoni Moda',serif;font-size:clamp(20px,3vw,28px);margin:0;">Materials</h3>
+      {% assign materials = product.metafields.details.materials %}
+      <p style="margin:0;opacity:.9">
+        {% if materials != blank %}
+          {{ materials }}
+        {% else %}
+          100% premium cotton. Final composition pending update.
+        {% endif %}
+      </p>
+    </div>
+
+    <div style="display:grid;gap:8px;">
+      <h3 style="font-family:'Bodoni Moda',serif;font-size:clamp(20px,3vw,28px);margin:0;">Care</h3>
+      {% assign care = product.metafields.details.care %}
+      <p style="margin:0;opacity:.9;white-space:pre-wrap;">
+        {% if care != blank %}
+          {{ care }}
+        {% else %}
+          Machine wash cold, gentle cycle. Line dry. Do not bleach. Cool iron if needed.
+        {% endif %}
+      </p>
+    </div>
+
+    {% assign size_file = product.metafields.details.size_chart %}
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <button type="button" class="tlk-size-btn"
+              style="appearance:none;border:1px solid currentColor;background:transparent;padding:.6rem 1rem;border-radius:999px;cursor:pointer;">
+        View size guide
+      </button>
+      {% if size_file != blank %}
+        <a href="{{ size_file | file_url }}" target="_blank" rel="noopener"
+           style="opacity:.85;text-decoration:underline;">Download size chart</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <dialog class="tlk-size-modal" style="padding:0;border:none;border-radius:14px;max-width:min(92vw,820px);width:fit-content;background:#111;color:#fff;">
+    <div style="padding:16px 16px 0 16px;display:flex;justify-content:space-between;align-items:center;">
+      <h4 style="font-family:'Bodoni Moda',serif;margin:0">Size guide</h4>
+      <button type="button" class="tlk-size-close" style="appearance:none;background:transparent;border:none;font-size:24px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="padding:16px;">
+      {% if size_file != blank %}
+        {% assign ext = size_file.file_extension | downcase %}
+        {% if ext == 'pdf' %}
+          <iframe src="{{ size_file | file_url }}" style="width:min(86vw,780px);height:70vh;border:0;border-radius:8px;"></iframe>
+        {% else %}
+          <img src="{{ size_file | file_url }}" alt="Size chart" style="max-width:min(86vw,780px);height:auto;border-radius:8px;">
+        {% endif %}
+      {% else %}
+        <p style="opacity:.9">Size chart coming soon.</p>
+      {% endif %}
+    </div>
+  </dialog>
+
+  <script>
+    (function(){
+      const root = document.currentScript.parentElement;
+      const btn = root.querySelector('.tlk-size-btn');
+      const modal = root.querySelector('.tlk-size-modal');
+      const close = root.querySelector('.tlk-size-close');
+
+      if(btn && modal){
+        btn.addEventListener('click', ()=> {
+          if (modal.showModal) modal.showModal(); else modal.setAttribute('open','');
+        });
+      }
+      if(close && modal){
+        close.addEventListener('click', ()=> modal.close ? modal.close() : modal.removeAttribute('open'));
+      }
+      modal?.addEventListener('click', (e)=>{
+        const rect = modal.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+          modal.close ? modal.close() : modal.removeAttribute('open');
+        }
+      });
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Product — Materials & Care",
+  "tag": "section",
+  "class": "section",
+  "settings": [],
+  "presets": [{ "name": "Product — Materials & Care" }]
+}
+{% endschema %}

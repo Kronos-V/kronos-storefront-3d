@@ -1091,8 +1091,8 @@
       "settings": {
         "mode": "three",
         "spline_embed": "<!-- paste Spline iframe here if you choose 'Spline' mode -->",
-        "model_url": "https://cdn.shopify.com/3d/models/3ee2c531aa29c5e3/Supima-tee-1.glb",
-        "three_model_url": "https://cdn.shopify.com/3d/models/3ee2c531aa29c5e3/Supima-tee-1.glb",
+        "model_url": "",
+        "three_model_url": "",
         "three_env_hdr": "",
         "exposure": 0.6,
         "autorotate": true,

@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "main-page",
@@ -16,13 +17,31 @@
           "name": "Title",
           "settings": {
             "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
             "type_preset": "h2",
-            "width": "100%"
-          }
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
         },
         "page-content": {
           "type": "page-content",
-          "settings": {}
+          "settings": {},
+          "blocks": {}
         }
       },
       "block_order": [
@@ -30,13 +49,199 @@
         "page-content"
       ],
       "settings": {
+        "content_direction": "column",
         "gap": 32,
+        "color_scheme": "",
         "padding-block-start": 40,
         "padding-block-end": 80
+      }
+    },
+    "materials_portal_Dah4zQ": {
+      "type": "materials-portal",
+      "blocks": {
+        "card_HzfM7R": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Supima_Cotton.webp",
+            "title": "Supima® Cotton",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/supima-cotton"
+          }
+        },
+        "card_NqXqdi": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Giza45_Cotton.webp",
+            "title": "Giza 45",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/egyptian-giza-45-cotton"
+          }
+        },
+        "card_GgjJtT": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Giza87_Cotton.jpg",
+            "title": "Giza 87",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/egyptian-giza-87-cotton"
+          }
+        },
+        "card_bLTNkR": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Sea_Island_Cotton.jpg",
+            "title": "Sea Island Cotton",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/sea-island-cotton"
+          }
+        },
+        "card_nkMKKi": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Suvin_Cotton.jpg",
+            "title": "Suvin Cotton",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/suvin-cotton"
+          }
+        },
+        "card_zNGTXx": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Merino_Wool.webp",
+            "title": "Merino Wool",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/merino-wool"
+          }
+        },
+        "card_JV8Kz4": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Cashmere_Wool.jpg",
+            "title": "Cashmere Wool",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/cashmere-wool"
+          }
+        },
+        "card_CCej7Y": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Vicuna_Wool.jpg",
+            "title": "Vicuna Wool",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/vicuna-wool"
+          }
+        },
+        "card_HFRJxy": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Alpaca_Wool.webp",
+            "title": "Alpaca Wool",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/alpaca-wool"
+          }
+        },
+        "card_7FPUhx": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Escorial_wool.png",
+            "title": "Escorial Wool",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/escorial-wool"
+          }
+        },
+        "card_HpfVxR": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Mulberry_Silk.jpg",
+            "title": "Mulberry Silk",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/mulberry-silk"
+          }
+        },
+        "card_7jrhhR": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Spider_Silk.jpg",
+            "title": "Spider Silk",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/spider-silk"
+          }
+        },
+        "card_KHpzE9": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Lotus_Silk.webp",
+            "title": "Lotus Silk",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/lotus-silk"
+          }
+        },
+        "card_XnVAac": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Sea_Silk.png",
+            "title": "Sea Silk",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/sea-silk"
+          }
+        },
+        "card_jpj8jc": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Belgian_Linen.jpg",
+            "title": "Belgian Linen",
+            "tag": "Natural Fiber",
+            "desc": "Long-staple softness, strength, and sheen.",
+            "url": "shopify://pages/belgian-linen"
+          }
+        }
+      },
+      "block_order": [
+        "card_HzfM7R",
+        "card_NqXqdi",
+        "card_GgjJtT",
+        "card_bLTNkR",
+        "card_nkMKKi",
+        "card_zNGTXx",
+        "card_JV8Kz4",
+        "card_CCej7Y",
+        "card_HFRJxy",
+        "card_7FPUhx",
+        "card_HpfVxR",
+        "card_7jrhhR",
+        "card_KHpzE9",
+        "card_XnVAac",
+        "card_jpj8jc"
+      ],
+      "name": "Materials Portal",
+      "settings": {
+        "heading": "Materials",
+        "subheading": "Explore the fibers and finishes behind each piece.",
+        "columns_desktop": 3,
+        "columns_mobile": "1",
+        "card_ratio": "square",
+        "bg": "#000000",
+        "text_color": "#F0F0EC",
+        "glow": "rgba(16,59,88,.35)"
       }
     }
   },
   "order": [
-    "main"
+    "main",
+    "materials_portal_Dah4zQ"
   ]
 }

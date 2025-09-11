@@ -1098,7 +1098,7 @@
         "autorotate": true,
         "rotation_speed": 0.4,
         "bg": "#f0f0ec",
-        "text_color": "#f0f0ec",
+        "text_color": "#212a2d",
         "heading": "The Kronos Legacy",
         "subheading": "Redefine Luxury"
       }

@@ -1085,7 +1085,7 @@
         "padding-block-end": 40
       }
     },
-    "interactive_3d_hero_RXAwRf": {
+    "interactive_3d_hero_cEXNpg": {
       "type": "interactive-3d-hero",
       "name": "Interactive 3D Hero",
       "settings": {
@@ -1096,7 +1096,7 @@
         "bg": "#f0f0ec",
         "text_color": "#212a2d",
         "heading": "The Kronos Legacy",
-        "subheading": "Redefining Luxury"
+        "subheading": "Redefine Luxury"
       }
     }
   },
@@ -1106,6 +1106,6 @@
     "product_list_UwRqN4",
     "section_LBnpFH",
     "hero_MVUtj6",
-    "interactive_3d_hero_RXAwRf"
+    "interactive_3d_hero_cEXNpg"
   ]
 }

@@ -60,12 +60,9 @@ var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
           // local then CDN
           load(pair[0], next, function(){ load(pair[1], next, function(){ onFail && onFail(pair); }); });
         }
-        (function series(i){
-          if (i >= libs.length) return init();
-          loadPair(libs[i], function(){ series(i+1); }, function(pair){
-            status('Failed to load: ' + pair[0]); console.error('Load failed for both local and CDN:', pair);
-          });
-        })(0);
+        console.error('GLB load failed', err);
+status('Model failed to load'); 
+addCube();
 
         function init(){
           status('Initializing…');
@@ -116,6 +113,7 @@ var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
             try {
               var draco = new THREE.DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
               var loader = new THREE.GLTFLoader(); loader.setDRACOLoader(draco);
+              status('Loading model…');
               loader.load(modelURL, function(gltf){
                 root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
                 if (!root){ addCube(); ready(); return; }
@@ -134,6 +132,7 @@ var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
                 var dist = Math.max(2, maxDim*1.4);
                 cam.position.set(0,0,dist);
                 sc.add(root);
+                status('');
                 ready();
               }, undefined, function(err){
                 console.error('GLB load failed', err); addCube(); ready();

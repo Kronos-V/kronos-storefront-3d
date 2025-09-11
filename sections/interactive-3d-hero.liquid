@@ -39,6 +39,119 @@
         data-speed="{{ section.settings.rotation_speed | default: 0.4 }}"
         style="width:100%;height:70vh;display:block;background:{{ section.settings.bg | default: '#000' }}">
       </canvas>
+      {%- assign hero_js = 'hero-3d.js' | asset_url -%}
+
+<!-- A) Dynamic import with logging -->
+<script type="module">
+  const src = {{ hero_js | json }};
+  console.log('[Hero3D] importing', src);
+  import(src).then(()=>{
+    console.log('[Hero3D] module loaded');
+  }).catch(err=>{
+    console.error('[Hero3D] module import failed:', err);
+  });
+</script>
+
+<!-- B) Non-module fallback (auto-runs if module didn’t flag loaded) -->
+<script>
+  (function(){
+    const canvasId = 'hero3d-{{ section.id }}';
+    const modelURL = {{ section.settings.three_model_url | json }};
+    const envURL   = {{ section.settings.three_env_hdr | json }};
+    const exposure = {{ section.settings.exposure | default: 1.0 }};
+    const autorot  = {{ section.settings.autorotate | default: true | json }};
+    const speed    = {{ section.settings.rotation_speed | default: 0.4 }};
+
+    function startFallback(){
+      if (window.__TLKHero3DLoaded) return; // module worked, skip
+      console.warn('[Hero3D] using non-module fallback');
+
+      // Load three + loaders (non-module)
+      load('https://unpkg.com/three@0.160.0/build/three.min.js', function(){
+        const libs = [
+          'https://unpkg.com/three@0.160.0/examples/js/loaders/DRACOLoader.js',
+          'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js',
+          'https://unpkg.com/three@0.160.0/examples/js/loaders/RGBELoader.js'
+        ];
+        loadMany(libs, init);
+      });
+
+      function load(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb; document.head.appendChild(s); }
+      function loadMany(arr, done){ (function next(){ if(!arr.length) return done(); load(arr.shift(), next); })(); }
+
+      function init(){
+        const canvas = document.getElementById(canvasId); if(!canvas||!window.THREE) return;
+
+        const r = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
+        r.outputColorSpace = THREE.SRGBColorSpace;
+        r.toneMapping = THREE.ACESFilmicToneMapping;
+        r.toneMappingExposure = exposure;
+        r.shadowMap.enabled = true;
+
+        const sc = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(60, 16/9, .1, 100); cam.position.set(0,0,3);
+
+        sc.add(new THREE.AmbientLight(0xffffff, .6));
+        const dl = new THREE.DirectionalLight(0xffffff, .9); dl.position.set(2,3,4); dl.castShadow = true; sc.add(dl);
+
+        // Ground shadow
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(10,10), new THREE.ShadowMaterial({opacity:.25}));
+        ground.rotation.x = -Math.PI/2; ground.position.y = -0.75; ground.receiveShadow = true; sc.add(ground);
+
+        // HDR environment (optional)
+        if (envURL){
+          const pmrem = new THREE.PMREMGenerator(r);
+          new THREE.RGBELoader().load(envURL, function(hdr){
+            sc.environment = pmrem.fromEquirectangular(hdr).texture;
+            hdr.dispose(); pmrem.dispose();
+          });
+        }
+
+        let root = null;
+
+        function addCube(){
+          const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({metalness:.4, roughness:.2}));
+          cube.castShadow = true; sc.add(cube); root = cube;
+        }
+
+        if (modelURL){
+          const draco = new THREE.DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+          const loader = new THREE.GLTFLoader(); loader.setDRACOLoader(draco);
+          loader.load(modelURL, function(gltf){
+            root = gltf.scene || gltf.scenes[0];
+            root.traverse(o=>{ if(o.isMesh){ o.castShadow = true; if(o.material&&o.material.map){ o.material.map.colorSpace = THREE.SRGBColorSpace; } } });
+            centerAndFrame(root, cam);
+            sc.add(root);
+          }, undefined, function(err){ console.error('GLB load failed', err); addCube(); });
+        } else {
+          addCube();
+        }
+
+        function centerAndFrame(obj, camera){
+          const box = new THREE.Box3().setFromObject(obj);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+          obj.position.sub(center);
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const dist = Math.max(2, maxDim * 1.4);
+          camera.position.set(0,0,dist);
+        }
+
+        function resize(){ const w=canvas.clientWidth||1200, h=canvas.clientHeight||600; r.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+        resize(); addEventListener('resize', resize, {passive:true});
+
+        (function animate(){
+          requestAnimationFrame(animate);
+          if (root && autorot) root.rotation.y += 0.01 * speed;
+          r.render(sc, cam);
+        })();
+      }
+    }
+
+    // Try module for ~1.5s; if not marked loaded, run fallback loader
+    setTimeout(startFallback, 1500);
+  })();
+</script>
       <!-- Temporary debug: hides automatically once JS initializes -->
       <div id="tlk-3d-debug-{{ section.id }}" style="position:absolute;inset:auto 0 8px 0;text-align:center;font-size:12px;opacity:.6;">
         Initializing 3D…

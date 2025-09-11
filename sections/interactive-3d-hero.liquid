@@ -47,7 +47,7 @@
 
         // Try local assets first; on error, fall back to CDN
         var libs = [
-          [ {{ 'three.module.js'   | asset_url | json }}, 'https://unpkg.com/three@0.160.0/build/three.module.js' ],
+          [ {{ 'three.module.min.js'   | asset_url | json }}, 'https://unpkg.com/three@0.160.0/build/three.module.min.js' ],
           [ {{ 'DRACOLoader.js' | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/DRACOLoader.js' ],
           [ {{ 'GLTFLoader.js'  | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js' ],
           [ {{ 'RGBELoader.js'  | asset_url | json }}, 'https://unpkg.com/three@0.160.0/examples/js/loaders/RGBELoader.js' ]

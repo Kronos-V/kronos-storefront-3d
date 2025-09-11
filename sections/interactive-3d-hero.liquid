@@ -1,25 +1,37 @@
-{% comment %}Interactive 3D Hero — simple, robust{% endcomment %}
+{% comment %}Interactive 3D Hero — robust loader{% endcomment %}
 <section class="section-3d-hero" style="position:relative;min-height:70vh">
   {% case section.settings.mode %}
-
     {% when 'spline' %}
       <div class="spline-embed">{{ section.settings.spline_embed }}</div>
 
     {% when 'modelviewer' %}
-      <model-viewer
-        src="{{ section.settings.model_url }}"
-        alt="{{ section.settings.alt | escape }}"
-        ar ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        interaction-prompt="none"
-        autoplay
-        style="width:100%;height:70vh;display:block;background:{{ section.settings.bg | default: '#000' }}">
-      </model-viewer>
+      <model-viewer src="{{ section.settings.model_url }}" alt="{{ section.settings.alt | escape }}"
+        ar ar-modes="webxr scene-viewer quick-look" camera-controls interaction-prompt="none" autoplay
+        style="width:100%;height:70vh;display:block;background:{{ section.settings.bg | default: '#000' }}"></model-viewer>
       <script defer src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     {% when 'three' %}
+      {%- assign hero_js = 'hero-3d.js' | asset_url -%}
+      {%- assign three_js = 'three.module.js' | asset_url -%}
+      {%- assign gltf_js  = 'GLTFLoader.js' | asset_url -%}
+      {%- assign draco_js = 'DRACOLoader.js' | asset_url -%}
+      {%- assign rgbe_js  = 'RGBELoader.js' | asset_url -%}
+      {%- assign orbit_js = 'OrbitControls.js' | asset_url -%}
+<script>
+  window.__TLK3D_LIBS = {
+    three: "{{ three_js }}",
+    gltf: "{{ gltf_js }}",
+    draco: "{{ draco_js }}",
+    rgbe: "{{ rgbe_js }}",
+    orbit: "{{ orbit_js }}"
+  };
+</script>
+<script type="module" src="{{ hero_js }}"></script>
+
+      {%- assign hero_js = 'hero-3d.js' | asset_url -%}
       <canvas
         id="hero3d-{{ section.id }}"
+        data-hero3d
         data-model="{{ section.settings.three_model_url }}"
         data-env="{{ section.settings.three_env_hdr }}"
         data-exposure="{{ section.settings.exposure | default: 1.0 }}"
@@ -27,121 +39,30 @@
         data-speed="{{ section.settings.rotation_speed | default: 0.4 }}"
         style="width:100%;height:70vh;display:block;background:{{ section.settings.bg | default: '#000' }}">
       </canvas>
-
-      {%- comment -%}
-      Non-module loader (always works). Loads Three + DRACO + GLTF + RGBE from CDN,
-      draws your GLB if provided, else shows a rotating cube.
-      {%- endcomment -%}
+      <!-- Temporary debug: hides automatically once JS initializes -->
+      <div id="tlk-3d-debug-{{ section.id }}" style="position:absolute;inset:auto 0 8px 0;text-align:center;font-size:12px;opacity:.6;">
+        Initializing 3D…
+      </div>
+      <script type="module" src="{{ hero_js }}"></script>
       <script>
-      (function(){
-        var canvasId = 'hero3d-{{ section.id }}';
-        var modelURL = {{ section.settings.three_model_url | json }};
-        var envURL   = {{ section.settings.three_env_hdr | json }};
-        var exposure = {{ section.settings.exposure | default: 1.0 }};
-        var autorot  = {{ section.settings.autorotate | default: true | json }};
-        var speed    = {{ section.settings.rotation_speed | default: 0.4 }};
-
-        function load(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb; s.onerror=function(e){console.error('Load failed:',src,e)}; document.head.appendChild(s); }
-        function series(arr, done){ (function next(){ if(!arr.length) return done(); load(arr.shift(), next); })(); }
-
-        series([
-          'https://unpkg.com/three@0.160.0/build/three.min.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/DRACOLoader.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js',
-          'https://unpkg.com/three@0.160.0/examples/js/loaders/RGBELoader.js'
-        ], function init(){
-          var canvas = document.getElementById(canvasId); if(!canvas||!window.THREE) return;
-
-          var r = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
-          r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-          r.outputColorSpace = THREE.SRGBColorSpace;
-          r.toneMapping = THREE.ACESFilmicToneMapping;
-          r.toneMappingExposure = exposure;
-          r.shadowMap.enabled = true;
-
-          var sc = new THREE.Scene();
-          var cam = new THREE.PerspectiveCamera(60, 16/9, 0.1, 100);
-          cam.position.set(0,0,3);
-
-          // Base lights
-          sc.add(new THREE.AmbientLight(0xffffff, .6));
-          var dl = new THREE.DirectionalLight(0xffffff, .9); dl.position.set(2,3,4); dl.castShadow = true; sc.add(dl);
-
-          // Soft ground shadow receiver
-          var ground = new THREE.Mesh(new THREE.PlaneGeometry(10,10), new THREE.ShadowMaterial({opacity:.25}));
-          ground.rotation.x = -Math.PI/2; ground.position.y = -0.75; ground.receiveShadow = true; sc.add(ground);
-
-          // Optional HDR environment
-          if (envURL){
-            var pmrem = new THREE.PMREMGenerator(r);
-            new THREE.RGBELoader().load(envURL, function(hdr){
-              sc.environment = pmrem.fromEquirectangular(hdr).texture;
-              hdr.dispose(); pmrem.dispose();
-            }, undefined, function(err){ console.warn('HDR load failed', err); });
-          }
-
-          var root = null;
-
-          function addCube(){
-            var geo = new THREE.BoxGeometry(1,1,1);
-            var mat = new THREE.MeshStandardMaterial({ metalness:.4, roughness:.2 });
-            root = new THREE.Mesh(geo, mat);
-            root.castShadow = true;
-            sc.add(root);
-          }
-
-          if (modelURL){
-            var draco = new THREE.DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-            var loader = new THREE.GLTFLoader(); loader.setDRACOLoader(draco);
-            loader.load(modelURL, function(gltf){
-              root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
-              if (!root) { addCube(); return; }
-              root.traverse(function(o){
-                if (o.isMesh){
-                  o.castShadow = true;
-                  if (o.material && o.material.map){ o.material.map.colorSpace = THREE.SRGBColorSpace; }
-                }
-              });
-              // center & frame
-              var box = new THREE.Box3().setFromObject(root);
-              var size = box.getSize(new THREE.Vector3());
-              var center = box.getCenter(new THREE.Vector3());
-              root.position.sub(center);
-              var maxDim = Math.max(size.x,size.y,size.z);
-              var dist = Math.max(2, maxDim*1.4);
-              cam.position.set(0,0,dist);
-              sc.add(root);
-            }, undefined, function(err){
-              console.error('GLB load failed', err); addCube();
-            });
-          } else {
-            addCube();
-          }
-
-          function resize(){
-            var w = canvas.clientWidth || 1200, h = canvas.clientHeight || 600;
-            r.setSize(w, h, false); cam.aspect = w/h; cam.updateProjectionMatrix();
-          }
-          resize(); window.addEventListener('resize', resize, { passive:true });
-
-          (function animate(){
-            requestAnimationFrame(animate);
-            if (root && autorot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-              root.rotation.y += 0.01 * speed;
-            }
-            r.render(sc, cam);
-          })();
-        });
-      })();
+        (function(){
+          const el = document.getElementById('tlk-3d-debug-{{ section.id }}');
+          let tries = 0;
+          const t = setInterval(()=>{
+            tries++;
+            if (window.__TLKHero3DLoaded) { el && (el.style.display='none'); clearInterval(t); }
+            if (tries > 40) { el && (el.textContent='3D script not detected'); clearInterval(t); }
+          }, 150);
+        })();
       </script>
 
     {% else %}
+      <!-- Fallback if mode not set -->
       <div style="height:70vh;display:grid;place-items:center;background:#000;color:#fff;">
-        Set Render mode to “Three.js (assets/hero-3d-.js)”.
+        Set Render mode to “Three.js (assets/hero-3d.js)”.
       </div>
   {% endcase %}
 
-  <!-- Text overlay -->
   <div class="overlay" style="position:absolute;inset:0;display:flex;align-items:end;pointer-events:none">
     <div style="padding:clamp(16px,3vw,40px);max-width:1200px;margin:auto;color:{{ section.settings.text_color }}">
       <h1 style="font-family:Bodoni Moda, serif;font-size:clamp(28px,5vw,56px);margin:0">{{ section.settings.heading }}</h1>
@@ -174,7 +95,6 @@
 
     { "type": "color", "id": "bg", "label": "Background", "default": "#000000" },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#F0F0EC" },
-    { "type": "text", "id": "alt", "label": "Alt text", "default": "3D hero" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "The Kronos Legacy" },
     { "type": "text", "id": "subheading", "label": "Subheading", "default": "Time Doesn’t Touch This." }
   ],

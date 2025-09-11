@@ -1099,6 +1099,7 @@
         "rotation_speed": 0.4,
         "bg": "#f0f0ec",
         "text_color": "#212a2d",
+        "alt": "3D hero",
         "heading": "The Kronos Legacy",
         "subheading": "Redefine Luxury"
       }

@@ -231,11 +231,13 @@
       "settings": {
         "heading": "Materials",
         "subheading": "Explore the fibers and finishes behind each piece.",
-        "columns_desktop": 3,
+        "columns_desktop": 2,
         "columns_mobile": "1",
         "card_ratio": "square",
-        "bg": "#000000",
-        "text_color": "#F0F0EC",
+        "image_fit": "contain",
+        "image_focus": "center center",
+        "bg": "#212a2d",
+        "text_color": "#f0f0ec",
         "glow": "rgba(16,59,88,.35)"
       }
     }

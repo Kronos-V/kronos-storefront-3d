@@ -62,7 +62,7 @@
         "card_HzfM7R": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/Supima_Cotton.webp",
+            "image": "shopify://shop_images/SupimaCotton_Slideshow.jpg",
             "title": "Supima® Cotton",
             "tag": "Natural Fiber",
             "desc": "Supima Cotton is not just fabric; it’s an experience of unparalleled softness and durability. Grown exclusively in the United States, its extra-long staple fibers create a material that feels luxurious against the skin and lasts far longer than ordinary cotton. Discover why it’s known as the world’s finest cotton.",
@@ -234,7 +234,7 @@
         "columns_desktop": 2,
         "columns_mobile": "1",
         "card_ratio": "square",
-        "image_fit": "contain",
+        "image_fit": "cover",
         "image_focus": "center center",
         "bg": "#212a2d",
         "text_color": "#f0f0ec",

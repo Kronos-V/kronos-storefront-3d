@@ -31,14 +31,29 @@ Materials Portal — TLK (v2)
       #materials-{{ section.id }} .tlk-grid{ grid-template-columns:repeat(var(--cols-d), minmax(0,1fr)); }
     }
     #materials-{{ section.id }} .tlk-card{ text-decoration:none; color:inherit; display:block; overflow:hidden; border-radius:18px; position:relative; isolation:isolate; }
-    #materials-{{ section.id }} .tlk-media{ position:relative; border-radius:18px; overflow:hidden; background:#0c0c0c; {{ ar_style | strip }} }
-    #materials-{{ section.id }} .tlk-media img{
-      width:100%;
-      {% if section.settings.card_ratio == 'auto' %}height:auto;{% else %}height:100%;{% endif %}
-      object-fit:{{ section.settings.image_fit | default: 'cover' }};
-      object-position:{{ section.settings.image_focus | default: 'center center' }};
-      display:block; transform:translateZ(0);
-    }
+    #materials-{{ section.id }} .tlk-media{
+  position:relative; border-radius:18px; overflow:hidden; background:#0c0c0c; {{ ar_style | strip }}
+  {% if section.settings.card_ratio == 'auto' %}
+    /* Ensure visible height when using Auto ratio */
+    min-height: 260px;
+  {% endif %}
+}
+
+/* Fixed-ratio cards: image fills the box */
+/* Auto-ratio cards: image takes natural height */
+{% if section.settings.card_ratio == 'auto' %}
+  #materials-{{ section.id }} .tlk-media img{
+    width:100%; height:auto; display:block;
+    object-fit:{{ section.settings.image_fit | default: 'contain' }};
+    object-position:{{ section.settings.image_focus | default: 'center center' }};
+  }
+{% else %}
+  #materials-{{ section.id }} .tlk-media img{
+    position:absolute; inset:0; width:100%; height:100%; display:block;
+    object-fit:{{ section.settings.image_fit | default: 'cover' }};
+    object-position:{{ section.settings.image_focus | default: 'center center' }};
+  }
+{% endif %}
     #materials-{{ section.id }} .tlk-glow{ position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:0 0 0 transparent; transition:box-shadow .35s ease; }
     #materials-{{ section.id }} .tlk-overlay{
       position:absolute; inset:0; display:flex; align-items:end; justify-content:space-between;

@@ -1,21 +1,36 @@
-// TLK Hero 3D (Shopify-safe, multi-canvas, with 'loaded' flag)
+// TLK Hero 3D — local-first imports with CDN fallback + visible debug
 window.__TLKHero3DLoaded = false;
 
-const THREE_SRC = 'https://unpkg.com/three@0.160.0/build/three.module.js';
-const GLTF_LOADER_SRC = 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-const DRACO_LOADER_SRC = 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js';
-const RGBE_LOADER_SRC  = 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/RGBELoader.js';
-const ORBIT_CTRL_SRC   = 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+const CDN = {
+  three: 'https://unpkg.com/three@0.160.0/build/three.module.js',
+  gltf:  'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js',
+  draco: 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js',
+  rgbe:  'https://unpkg.com/three@0.160.0/examples/jsm/loaders/RGBELoader.js',
+  orbit: 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js'
+};
+
+const LIBS = (window.__TLK3D_LIBS || CDN);
 
 (async function initAll(){
   const canvases = document.querySelectorAll('canvas[data-hero3d]');
   if (!canvases.length) return;
 
-  const THREE = await import(THREE_SRC);
-  const { GLTFLoader }  = await import(GLTF_LOADER_SRC);
-  const { DRACOLoader } = await import(DRACO_LOADER_SRC);
-  const { RGBELoader }  = await import(RGBE_LOADER_SRC);
-  const { OrbitControls } = await import(ORBIT_CTRL_SRC);
+  // Try local assets first; if they fail, try CDN
+  let THREE, GLTFLoader, DRACOLoader, RGBELoader, OrbitControls;
+  try {
+    THREE = await import(LIBS.three);
+    ({ GLTFLoader }  = await import(LIBS.gltf));
+    ({ DRACOLoader } = await import(LIBS.draco));
+    ({ RGBELoader }  = await import(LIBS.rgbe));
+    ({ OrbitControls } = await import(LIBS.orbit));
+  } catch (e) {
+    console.warn('Local imports failed; trying CDN…', e);
+    THREE = await import(CDN.three);
+    ({ GLTFLoader }  = await import(CDN.gltf));
+    ({ DRACOLoader } = await import(CDN.draco));
+    ({ RGBELoader }  = await import(CDN.rgbe));
+    ({ OrbitControls } = await import(CDN.orbit));
+  }
 
   for (const canvas of canvases) {
     try { await initOne(canvas, { THREE, GLTFLoader, DRACOLoader, RGBELoader, OrbitControls }); }
@@ -26,6 +41,9 @@ const ORBIT_CTRL_SRC   = 'https://unpkg.com/three@0.160.0/examples/jsm/controls/
 
 async function initOne(canvas, libs){
   const { THREE, GLTFLoader, DRACOLoader, RGBELoader, OrbitControls } = libs;
+
+  // Visible “running” badge in bottom-left (auto-hides after 2s)
+  badge(canvas, '3D starting…');
 
   const modelURL   = canvas.dataset.model || '';
   const envURL     = canvas.dataset.env || '';
@@ -48,21 +66,18 @@ async function initOne(canvas, libs){
   controls.autoRotate = autorotate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   controls.autoRotateSpeed = speed;
 
-  // Environment or lights
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
   if (envURL) {
     try {
       const hdrTex = await new RGBELoader().loadAsync(envURL);
-      const envMap = pmrem.fromEquirectangular(hdrTex).texture;
-      scene.environment = envMap;
+      scene.environment = pmrem.fromEquirectangular(hdrTex).texture;
       hdrTex.dispose(); pmrem.dispose();
     } catch { addLights(scene, THREE); }
   } else {
     addLights(scene, THREE);
   }
 
-  // Model loader
   const gltfLoader = new GLTFLoader();
   const draco = new DRACOLoader();
   draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -81,7 +96,7 @@ async function initOne(canvas, libs){
       centerAndFrame(root, camera, controls, THREE);
       scene.add(root);
     } catch (e) {
-      console.warn('GLB failed; showing demo cube.', e);
+      console.warn('GLB failed; using demo cube.', e);
       addCube(scene, THREE);
     }
   } else {
@@ -102,6 +117,8 @@ async function initOne(canvas, libs){
     controls.update();
     renderer.render(scene, camera);
   })();
+
+  setTimeout(()=>badge(canvas, ''), 2000); // hide badge
 }
 
 function addLights(scene, THREE){
@@ -125,4 +142,15 @@ function centerAndFrame(obj, camera, controls, THREE){
   camera.position.set(0,0,dist);
   controls.target.set(0,0,0);
   controls.update();
+}
+function badge(canvas, text){
+  let el = canvas.parentElement.querySelector('.tlk-3d-badge');
+  if (!el){
+    el = document.createElement('div');
+    el.className='tlk-3d-badge';
+    el.style.cssText='position:absolute;left:10px;bottom:10px;font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;pointer-events:none;';
+    canvas.parentElement.appendChild(el);
+  }
+  el.textContent = text;
+  el.style.display = text ? 'inline-block' : 'none';
 }

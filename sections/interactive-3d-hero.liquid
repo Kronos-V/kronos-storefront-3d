@@ -12,6 +12,23 @@
 
     {% when 'three' %}
       {%- assign hero_js = 'hero-3d.js' | asset_url -%}
+      {%- assign three_js = 'three.module.js' | asset_url -%}
+      {%- assign gltf_js  = 'GLTFLoader.js' | asset_url -%}
+      {%- assign draco_js = 'DRACOLoader.js' | asset_url -%}
+      {%- assign rgbe_js  = 'RGBELoader.js' | asset_url -%}
+      {%- assign orbit_js = 'OrbitControls.js' | asset_url -%}
+<script>
+  window.__TLK3D_LIBS = {
+    three: "{{ three_js }}",
+    gltf: "{{ gltf_js }}",
+    draco: "{{ draco_js }}",
+    rgbe: "{{ rgbe_js }}",
+    orbit: "{{ orbit_js }}"
+  };
+</script>
+<script type="module" src="{{ hero_js }}"></script>
+
+      {%- assign hero_js = 'hero-3d.js' | asset_url -%}
       <canvas
         id="hero3d-{{ section.id }}"
         data-hero3d

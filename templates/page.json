@@ -236,8 +236,8 @@
         "card_ratio": "square",
         "image_fit": "cover",
         "image_focus": "center center",
-        "bg": "#212a2d",
-        "text_color": "#f0f0ec",
+        "bg": "#f0f0ec",
+        "text_color": "#212a2d",
         "glow": "rgba(16,59,88,.35)"
       }
     }

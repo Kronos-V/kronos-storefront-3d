@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Kronos-V/kronos-storefront-3d/issues"
   },
-  "homepage": "https://github.com/Kronos-V/kronos-storefront-3d#readme"
+  "homepage": "https://github.com/Kronos-V/kronos-storefront-3d#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

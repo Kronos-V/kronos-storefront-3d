@@ -1,0 +1,64 @@
+{% comment %} Elegant timeline with image blocks {% endcomment %}
+<section style="padding:clamp(28px,5vw,64px) 0;background:{{ section.settings.bg }};color:{{ section.settings.text }}">
+  <div style="width:min(1100px,92%);margin:0 auto;">
+    {% if section.settings.heading != blank %}
+      <h2 style="font-family:'Bodoni Moda',serif;font-size:clamp(28px,4.5vw,48px);margin:0 0 12px 0;">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p style="max-width:65ch;opacity:.9;margin:0 0 24px 0;">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    <div style="position:relative;">
+      <div style="position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:rgba(255,255,255,.12);"></div>
+      {% for block in section.blocks %}
+        {% assign left = forloop.index0 | modulo: 2 %}
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:center;margin:32px 0;">
+          {% if left == 0 %}
+            <div style="text-align:right;padding-right:16px;">
+              <div style="opacity:.8">{{ block.settings.kicker }}</div>
+              <h3 style="font-family:'Bodoni Moda',serif;margin:.1rem 0;">{{ block.settings.title }}</h3>
+              <p style="opacity:.9;margin:0;">{{ block.settings.text }}</p>
+            </div>
+            <div>
+              {% if block.settings.image %}<img src="{{ block.settings.image | image_url: width: 1400 }}" alt="" style="width:100%;border-radius:12px;display:block;">{% endif %}
+            </div>
+          {% else %}
+            <div>
+              {% if block.settings.image %}<img src="{{ block.settings.image | image_url: width: 1400 }}" alt="" style="width:100%;border-radius:12px;display:block;">{% endif %}
+            </div>
+            <div style="padding-left:16px;">
+              <div style="opacity:.8">{{ block.settings.kicker }}</div>
+              <h3 style="font-family:'Bodoni Moda',serif;margin:.1rem 0;">{{ block.settings.title }}</h3>
+              <p style="opacity:.9;margin:0;">{{ block.settings.text }}</p>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Story — Timeline",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Kronos Legacy" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "What endures, refines." },
+    { "type": "color", "id": "bg", "label": "Background", "default": "#000000" },
+    { "type": "color", "id": "text", "label": "Text color", "default": "#F0F0EC" }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "settings": [
+        { "type": "text", "id": "kicker", "label": "Year / Tag", "default": "2025" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Launch" },
+        { "type": "textarea", "id": "text", "label": "Copy", "default": "Our first drop explores timeproof essentials." },
+        { "type": "image_picker", "id": "image", "label": "Image" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Brand Story — Timeline" }]
+}
+{% endschema %}

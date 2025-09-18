@@ -1,0 +1,45 @@
+{% comment %} Sticky ATC for product templates (OS2.0) {% endcomment %}
+{% if product %}
+<section id="tlk-sticky-atc" style="position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.08);">
+  <div style="width:min(1200px,92%);margin:0 auto;display:flex;gap:12px;align-items:center;padding:10px 0;flex-wrap:wrap;">
+    <div style="flex:1;min-width:220px;color:#fff;">
+      <div style="font-weight:600">{{ product.title }}</div>
+      <div style="opacity:.8">{{ product.selected_or_first_available_variant.price | money }}</div>
+    </div>
+
+    <form id="tlk-atc-form" action="/cart/add" method="post" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select name="id" style="min-width:220px;padding:.6rem .8rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:#111;color:#fff;">
+        {% for v in product.variants %}
+          <option value="{{ v.id }}" {% if v.id == product.selected_or_first_available_variant.id %}selected{% endif %} {% unless v.available %}disabled{% endunless %}>
+            {{ v.title }} — {{ v.price | money }}{% unless v.available %} (Sold out){% endunless %}
+          </option>
+        {% endfor %}
+      </select>
+      <input name="quantity" type="number" value="1" min="1" style="width:80px;padding:.6rem .8rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:#111;color:#fff;">
+      <button type="submit" class="tlk-atc-btn" style="padding:.75rem 1.1rem;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:#F0F0EC;color:#111;font-weight:600;cursor:pointer;">
+        Add to cart
+      </button>
+    </form>
+
+    <div id="tlk-atc-note" style="margin-left:auto;color:#fff;opacity:.8;display:none;">Added ✓</div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const form = document.getElementById('tlk-atc-form');
+  const note = document.getElementById('tlk-atc-note');
+  if(!form) return;
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    try{
+      const fd = new FormData(form);
+      const res = await fetch('/cart/add.js', { method:'POST', headers:{'Accept':'application/json'}, body:fd });
+      if(!res.ok) throw new Error('Add failed');
+      note.style.display='block'; setTimeout(()=>note.style.display='none', 1500);
+      document.dispatchEvent(new CustomEvent('cart:refresh')); // lets your theme update mini-cart if it listens
+    }catch(err){ alert('Could not add to cart'); }
+  });
+})();
+</script>
+{% endif %}

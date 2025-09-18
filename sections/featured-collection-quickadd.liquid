@@ -1,0 +1,51 @@
+{% comment %} Featured collection grid with quick add (1st available variant) {% endcomment %}
+<section style="padding:clamp(24px,4vw,48px) 0;">
+  <div style="width:min(1200px,92%);margin:0 auto;">
+    {% if section.settings.heading != blank %}
+      <h2 style="font-family:'Bodoni Moda',serif;font-size:clamp(24px,4vw,40px);margin:0 0 12px 0;">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% assign coll = collections[section.settings.collection] %}
+    {% if coll and coll.products_count > 0 %}
+      <div style="display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr));">
+        {% for product in coll.products limit: section.settings.limit %}
+          <div style="background:#0f0f10;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
+            <a href="{{ product.url }}" style="display:block;aspect-ratio:1/1;background:#111;">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 1200 }}" alt="{{ product.title | escape }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+              {% endif %}
+            </a>
+            <div style="padding:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;color:#fff;">
+              <div>
+                <div style="font-weight:600;line-height:1.1">{{ product.title }}</div>
+                <div style="opacity:.8">{{ product.price | money }}</div>
+              </div>
+              {% assign v = product.selected_or_first_available_variant %}
+              {% if product.has_only_default_variant %}
+                <form action="/cart/add" method="post" onsubmit="event.preventDefault(); fetch('/cart/add.js',{method:'POST',headers:{'Accept':'application/json'},body:new FormData(this)}).then(()=>this.querySelector('button').textContent='Added ✓').catch(()=>alert('Add failed'));">
+                  <input type="hidden" name="id" value="{{ v.id }}">
+                  <button type="submit" style="padding:.55rem .9rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#F0F0EC;color:#111;font-weight:600;cursor:pointer;">Quick add</button>
+                </form>
+              {% else %}
+                <a href="{{ product.url }}" style="padding:.55rem .9rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;text-decoration:none;">Choose options</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="opacity:.8">No products in this collection yet.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection — Quick Add",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Featured" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "label": "Products to show", "min": 2, "max": 12, "step": 1, "default": 4 }
+  ],
+  "presets": [{ "name": "Featured Collection — Quick Add" }]
+}
+{% endschema %}

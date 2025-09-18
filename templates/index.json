@@ -44,6 +44,7 @@
       ],
       "settings": {
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/womens-dress-wear-minimal-10-middle.jpg",
         "media_type_2": "image",
         "link": "",
         "open_in_new_tab": false,
@@ -1060,8 +1061,9 @@
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/Vicuna_Wool.jpg",
         "media_type_2": "image",
-        "link": "",
+        "link": "shopify://collections/all",
         "open_in_new_tab": false,
         "content_direction": "row",
         "vertical_on_mobile": true,
